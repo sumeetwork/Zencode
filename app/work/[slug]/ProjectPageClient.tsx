@@ -5,11 +5,17 @@ import Link from 'next/link';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type { Project } from '../../data/projects';
-import { projects } from '../../data/projects';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function ProjectPageClient({ project }: { project: Project }) {
+interface Props {
+  project: Project;
+  related: Project[];
+  index: number;
+  total: number;
+}
+
+export default function ProjectPageClient({ project, related, index, total }: Props) {
   const pageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,10 +47,6 @@ export default function ProjectPageClient({ project }: { project: Project }) {
     }, pageRef);
     return () => ctx.revert();
   }, [project.slug]);
-
-  const related = projects
-    .filter((p) => p.slug !== project.slug && p.categories.some((c) => project.categories.includes(c)))
-    .slice(0, 3);
 
   // Build title words for staggered reveal
   const titleWords = project.title.split(' ');
@@ -95,7 +97,7 @@ export default function ProjectPageClient({ project }: { project: Project }) {
         }} />
 
         {/* Top bar: back link + project counter */}
-        <div style={{
+        <div className="pp-top-bar" style={{
           position: 'absolute', top: 100, left: 0, right: 0,
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           padding: '0 40px',
@@ -107,13 +109,13 @@ export default function ProjectPageClient({ project }: { project: Project }) {
             fontSize: '0.65rem', letterSpacing: '0.2em',
             color: 'rgba(136,189,188,0.25)', textTransform: 'uppercase',
           }}>
-            {String(projects.findIndex(p => p.slug === project.slug) + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
+            {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
           </span>
         </div>
 
         {/* Main layout: left text + right mockup */}
-        <div className="pp-hero-content" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 40px', width: '100%', position: 'relative' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: '60px', alignItems: 'center' }}>
+        <div className="pp-hero-content pp-hero-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 40px', width: '100%', position: 'relative' }}>
+          <div className="pp-hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: '60px', alignItems: 'center' }}>
 
             {/* Left — text */}
             <div>
@@ -245,8 +247,8 @@ export default function ProjectPageClient({ project }: { project: Project }) {
       </div>
 
       {/* ── Main content ────────────────────────────────────────────────── */}
-      <div id="project-content" style={{ maxWidth: '1280px', margin: '0 auto', padding: '72px 40px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '72px', alignItems: 'start' }}>
+      <div id="project-content" className="pp-content-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '72px 40px 80px' }}>
+        <div className="pp-content-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '72px', alignItems: 'start' }}>
 
           {/* Description */}
           <div className="pp-desc-block">
@@ -319,13 +321,13 @@ export default function ProjectPageClient({ project }: { project: Project }) {
           borderTop: '1px solid rgba(136,189,188,0.07)',
           borderBottom: '1px solid rgba(136,189,188,0.07)',
         }}>
-          <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 40px' }}>
+          <div className="pp-images-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 40px' }}>
             <div style={{ fontSize: '0.68rem', letterSpacing: '0.2em', color: 'rgba(136,189,188,0.45)', textTransform: 'uppercase', marginBottom: 36 }}>
               Project Screenshots
             </div>
-            <div style={{
+            <div className="pp-images-grid" style={{
               display: 'grid',
-              gridTemplateColumns: project.images.length === 1 ? '1fr' : project.images.length === 2 ? '1fr 1fr' : 'repeat(auto-fit, minmax(380px, 1fr))',
+              gridTemplateColumns: project.images.length === 1 ? '1fr' : project.images.length === 2 ? '1fr 1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
               gap: 16,
             }}>
               {project.images.map((img, i) => (
@@ -344,7 +346,7 @@ export default function ProjectPageClient({ project }: { project: Project }) {
 
       {/* ── Related ─────────────────────────────────────────────────────── */}
       {related.length > 0 && (
-        <div className="pp-related-section" style={{ maxWidth: '1280px', margin: '0 auto', padding: '80px 40px 88px' }}>
+        <div className="pp-related-section pp-related-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '80px 40px 88px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 36, flexWrap: 'wrap', gap: 16 }}>
             <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#e8e4df', letterSpacing: '-0.02em' }}>More Projects</h2>
             <Link href="/#portfolio" style={{ fontSize: '0.75rem', letterSpacing: '0.1em', color: 'var(--teal-light)', textDecoration: 'none', textTransform: 'uppercase' }}>
@@ -378,7 +380,7 @@ export default function ProjectPageClient({ project }: { project: Project }) {
       )}
 
       {/* ── CTA ─────────────────────────────────────────────────────────── */}
-      <div style={{ background: 'rgba(37,78,88,0.3)', borderTop: '1px solid rgba(136,189,188,0.08)', padding: '88px 40px', textAlign: 'center' }}>
+      <div className="pp-cta-section" style={{ background: 'rgba(37,78,88,0.3)', borderTop: '1px solid rgba(136,189,188,0.08)', padding: '88px 40px', textAlign: 'center' }}>
         <span className="section-label" style={{ display: 'block', marginBottom: 14 }}>Start Your Project</span>
         <h2 style={{ fontSize: 'clamp(1.7rem, 3vw, 2.4rem)', fontWeight: 800, color: '#e8e4df', letterSpacing: '-0.03em', marginBottom: 14 }}>
           Have a similar project in mind?
@@ -441,8 +443,19 @@ export default function ProjectPageClient({ project }: { project: Project }) {
 
         /* ── Responsive ── */
         @media (max-width: 900px) {
+          .pp-hero-grid { grid-template-columns: 1fr !important; }
           .pp-mockup { display: none !important; }
+          .pp-content-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
           .pp-sidebar { position: static !important; }
+          .pp-images-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 640px) {
+          .pp-top-bar { padding: 0 20px !important; }
+          .pp-hero-inner { padding: 80px 20px 0 !important; }
+          .pp-content-inner { padding: 40px 20px 60px !important; }
+          .pp-images-inner { padding: 0 20px !important; }
+          .pp-related-inner { padding: 60px 20px 72px !important; }
+          .pp-cta-section { padding: 72px 20px !important; }
         }
       `}</style>
     </div>

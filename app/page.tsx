@@ -4,6 +4,7 @@ import ServicesSection from './components/ServicesSection';
 import PortfolioGrid from './components/PortfolioGrid';
 import StatsSection from './components/StatsSection';
 import ContactSection from './components/ContactSection';
+import { getProjects } from './data/projects';
 
 export const metadata: Metadata = {
   title: 'ZenCode | Web Solutions Agency South Africa',
@@ -16,11 +17,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const projects = await getProjects();
+
   return (
     <>
       <HeroSection />
-      <PortfolioGrid />
+      <PortfolioGrid projects={projects} />
       <ServicesSection />
       <StatsSection />
       <ContactSection />

@@ -3,9 +3,15 @@
   "configurations": [
     {
       "name": "zencode-dev",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "D:\\WORK\\Cloude\\zencode\\.claude\\npm-wrapper.cmd",
       "runtimeArgs": ["run", "dev", "--", "-p", "3001"],
       "port": 3001
+    },
+    {
+      "name": "zencode-studio",
+      "runtimeExecutable": "D:\\WORK\\Cloude\\zencode\\.claude\\npm-wrapper.cmd",
+      "runtimeArgs": ["--prefix", "studio", "run", "dev", "--", "--port", "3333"],
+      "port": 3333
     }
   ]
 }

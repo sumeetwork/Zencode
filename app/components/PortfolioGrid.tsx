@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { projects } from '../data/projects';
+import type { Project } from '../data/projects';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,7 +17,7 @@ function getGridStyle(size: string, index: number): React.CSSProperties {
 
 const categories = ['All', 'Design', 'Development', 'eCommerce', 'SEO & Optimisation', 'AI'];
 
-export default function PortfolioGrid() {
+export default function PortfolioGrid({ projects }: { projects: Project[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const [activeCategory, setActiveCategory] = useState('All');
 

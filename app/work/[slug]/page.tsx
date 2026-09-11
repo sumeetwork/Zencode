@@ -1,17 +1,18 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { projects, getProjectBySlug } from '../../data/projects';
+import { getProjects, getProjectBySlug } from '../../data/projects';
 import ProjectPageClient from './ProjectPageClient';
 
 const SITE_URL = 'https://zencode.co.za';
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const projects = await getProjects();
   return projects.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
   if (!project) return { title: 'Project Not Found' };
 
   const url = `${SITE_URL}/work/${project.slug}`;
@@ -41,8 +42,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const [project, allProjects] = await Promise.all([getProjectBySlug(slug), getProjects()]);
   if (!project) notFound();
+
+  const related = allProjects
+    .filter((p) => p.slug !== project.slug && p.categories.some((c) => project.categories.includes(c)))
+    .slice(0, 3);
+  const index = allProjects.findIndex((p) => p.slug === project.slug);
+  const total = allProjects.length;
 
   const url = `${SITE_URL}/work/${project.slug}`;
   const imageUrl = project.thumbnailUrl.startsWith('/')
@@ -68,7 +75,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ProjectPageClient project={project} />
+      <ProjectPageClient project={project} related={related} index={index} total={total} />
     </>
   );
 }

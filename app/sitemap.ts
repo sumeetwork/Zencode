@@ -1,11 +1,11 @@
 import type { MetadataRoute } from 'next';
-import { projects } from './data/projects';
-
-export const dynamic = 'force-static';
+import { getProjects } from './data/projects';
 
 const SITE_URL = 'https://zencode.co.za';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const projects = await getProjects();
+
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: SITE_URL,
