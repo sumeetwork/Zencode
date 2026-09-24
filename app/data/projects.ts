@@ -49,7 +49,8 @@ const PROJECTS_QUERY = `*[_type == "project"] | order(order asc) {
 }`;
 
 export async function getProjects(): Promise<Project[]> {
-  return client.fetch(PROJECTS_QUERY, {}, { next: { tags: ['projects'] } });
+  // Time-based refresh keeps edits flowing even without the webhook; the tag allows instant on-demand revalidation.
+  return client.fetch(PROJECTS_QUERY, {}, { next: { tags: ['projects'], revalidate: 60 } });
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | undefined> {
